@@ -5,7 +5,7 @@ from keras.datasets import mnist
 from keras.layers import Dense, Flatten, Dropout
 from keras.losses import SparseCategoricalCrossentropy
 
-from commons.TfModel import TfModel
+from commons.tfmodel import TfModel
 
 
 class SequentialModel(TfModel):
