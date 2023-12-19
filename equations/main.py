@@ -15,23 +15,28 @@ class Polynomial(abc.ABC):
     def get_data_matrix(self):
         pass
 
-    def compute(self, x: np.ndarray):
-        return self.equation(x)
-
 
 class D2Polynomial(Polynomial):
 
     def __init__(self):
         super().__init__()
-        self.equation = lambda x: x[0] * x[0] + 1
+        self.equation = lambda x, y: x * y + 1
+
+    def compute(self, x: np.ndarray):
+        results = []
+        for i, x_instance in enumerate(x):
+            results.append(self.equation(x[i][0], x[i][1]))
+        return results
 
     def get_data_matrix(self):
+        rows = 12
         x: np.ndarray[Any, np.dtype[float]] = np.array([
-            [5, 7, 8, 4]], dtype=float).reshape(2, 2)
-        y: np.ndarray[Any, np.dtype[float]] = np.array([36, 33], dtype=float).reshape(2, 1)
+            [5, 7, 8, 4, 3, 5, 34, 56, 35, 67, 456, 2343, 3423, 34343, 43, 346, 121, 44, 7865, 1352, 4523, 54545, 232,
+             237]], dtype=float).reshape(rows, 2)
+        y = np.array([self.compute(x)], dtype=float).reshape(rows, 1)
 
         x_test = np.array([10.0, 20.0], dtype=float).reshape(1, 2)
-        y_test = np.array([i for i in self.compute(x_test)], dtype=float)
+        y_test = np.array(self.compute(x_test), dtype=float).reshape(1, 1)
         print(f"X -> {x.shape} y -> {y.shape}, X_test -> {x_test.shape} y_test -> {y_test.shape}")
         return x, y, x_test, y_test
 
@@ -42,9 +47,12 @@ class D1Polynomial(Polynomial):
         super().__init__()
         self.equation = lambda a: 2 * a + 1
 
+    def compute(self, x: np.ndarray):
+        return self.equation(x)
+
     def get_data_matrix(self):
         x = np.array([5, 7, 8, 4, 3, 23, 2, 5, 7, 9, 90, 6, 65, 5, 4, 34, 33, 3, 545, 2332], dtype=float).reshape(20, 1)
-        y = np.array([i for i in self.compute(x)], dtype=float).reshape(20, 1)
+        y = np.array([self.compute(x)], dtype=float).reshape(20, 1)
         x_test = np.array([10.0, 20.0], dtype=float).reshape(2, 1)
         y_test = np.array([i for i in self.compute(x_test)], dtype=float).reshape(2, 1)
         print(f"X -> {x.shape} y -> {y.shape}, X_test -> {x_test.shape} y_test -> {y_test.shape}")
@@ -62,16 +70,16 @@ async def train_model(degree: int, x_train, y_train, x_test, y_test):
 
     model.compile(optimizer='RMSprop', loss="mean_squared_error")
     print(model.summary())
-    model.fit(x_train, y_train, epochs=5000)
+    model.fit(x_train, y_train, epochs=10000)
     print(f"Actual output = {y_test}")
     print(f"Predicted output = {model.predict(x_test)}")
 
 
 def main():
     x1, y1, x1_test, y1_test = D1Polynomial().get_data_matrix()
-    # x2, y2, x2_test, y2_test = D2Polynomial().get_data_matrix()
+    x2, y2, x2_test, y2_test = D2Polynomial().get_data_matrix()
     asyncio.run(train_model(1, x1, y1, x1_test, y1_test))
-    # asyncio.run(train_model(2, x2, y2, x2_test, y2_test))
+    asyncio.run(train_model(2, x2, y2, x2_test, y2_test))
 
 
 if __name__ == '__main__':
