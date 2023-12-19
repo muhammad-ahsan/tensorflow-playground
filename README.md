@@ -1,5 +1,5 @@
 # Tensorflow Playground
-Experiment using TensorFlow Framework for deep learning
+Experimenting using TensorFlow framework for deep learning
 
 
 
