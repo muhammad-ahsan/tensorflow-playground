@@ -29,14 +29,16 @@ class D2Polynomial(Polynomial):
         return results
 
     def get_data_matrix(self):
-        rows = 12
+        rows: int = 12
+        columns: int = 2
         x: np.ndarray[Any, np.dtype[float]] = np.array([
             [5, 7, 8, 4, 3, 5, 34, 56, 35, 67, 456, 2343, 3423, 34343, 43, 346, 121, 44, 7865, 1352, 4523, 54545, 232,
-             237]], dtype=float).reshape(rows, 2)
+             237]], dtype=float).reshape(rows, columns)
         y = np.array([self.compute(x)], dtype=float).reshape(rows, 1)
 
-        x_test = np.array([10.0, 20.0], dtype=float).reshape(1, 2)
-        y_test = np.array(self.compute(x_test), dtype=float).reshape(1, 1)
+        num_test_examples: int = 1
+        x_test = np.array([10.0, 20.0], dtype=float).reshape(num_test_examples, columns)
+        y_test = np.array(self.compute(x_test), dtype=float).reshape(num_test_examples, 1)
         print(f"X -> {x.shape} y -> {y.shape}, X_test -> {x_test.shape} y_test -> {y_test.shape}")
         return x, y, x_test, y_test
 
@@ -51,10 +53,13 @@ class D1Polynomial(Polynomial):
         return self.equation(x)
 
     def get_data_matrix(self):
-        x = np.array([5, 7, 8, 4, 3, 23, 2, 5, 7, 9, 90, 6, 65, 5, 4, 34, 33, 3, 545, 2332], dtype=float).reshape(20, 1)
-        y = np.array([self.compute(x)], dtype=float).reshape(20, 1)
-        x_test = np.array([10.0, 20.0], dtype=float).reshape(2, 1)
-        y_test = np.array([i for i in self.compute(x_test)], dtype=float).reshape(2, 1)
+        rows: int = 20
+        columns: int = 1
+        num_test_examples: int = 1
+        x = np.array([5, 7, 8, 4, 3, 23, 2, 5, 7, 9, 90, 6, 65, 5, 4, 34, 33, 3, 545, 2332], dtype=float).reshape(rows, columns)
+        y = np.array([self.compute(x)], dtype=float).reshape(rows, 1)
+        x_test = np.array([10.0], dtype=float).reshape(num_test_examples, columns)
+        y_test = np.array([i for i in self.compute(x_test)], dtype=float).reshape(num_test_examples, 1)
         print(f"X -> {x.shape} y -> {y.shape}, X_test -> {x_test.shape} y_test -> {y_test.shape}")
         return x, y, x_test, y_test
 
@@ -64,15 +69,17 @@ async def train_model(degree: int, x_train, y_train, x_test, y_test):
         case 1:
             model = keras.Sequential([keras.layers.Dense(units=1, input_shape=[1])])
         case 2:
-            model = keras.Sequential([keras.layers.Dense(units=1, input_shape=[2])])
+            model = keras.Sequential([keras.layers.Dense(units=1, activation='elu', input_shape=[2])])
         case _:
             raise NotImplementedError(f"Polynomial degree {degree} is not supported")
 
-    model.compile(optimizer='RMSprop', loss="mean_squared_error")
+    model.compile(optimizer='RMSprop', loss="mae")
     print(model.summary())
-    model.fit(x_train, y_train, epochs=10000)
-    print(f"Actual output = {y_test}")
-    print(f"Predicted output = {model.predict(x_test)}")
+    model.fit(x_train, y_train, epochs=200)
+    predicted = model.predict(x_test)
+    assert len(predicted) == len(y_test)
+    print(f"Actual output for polynomial degree {degree} = {y_test}")
+    print(f"Predicted output for polynomial degree {degree} = {predicted}")
 
 
 def main():
