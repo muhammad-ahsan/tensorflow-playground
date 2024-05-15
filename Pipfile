@@ -11,5 +11,7 @@ tensorflow-datasets = "*"
 [dev-packages]
 # Accelerate the training of machine learning models with TensorFlow right on your Mac.
 tensorflow-metal = "*"
+tfx = "*"
+jupyter = "*"
 pytest = "*"
 pytest-cov = "*"
