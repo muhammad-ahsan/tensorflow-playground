@@ -1,9 +1,9 @@
 import tensorflow as tf
+from keras import Sequential
+from keras.src.datasets import mnist
+from keras.src.layers import Flatten, Dense, Dropout
+from keras.src.losses import SparseCategoricalCrossentropy
 
-from keras.models import Sequential
-from keras.datasets import mnist
-from keras.layers import Dense, Flatten, Dropout
-from keras.losses import SparseCategoricalCrossentropy
 
 from commons.tfmodel import TfModel
 
