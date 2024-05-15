@@ -9,5 +9,7 @@ tensorflow = ">=2.15"
 tensorflow-datasets = "*"
 
 [dev-packages]
+# Accelerate the training of machine learning models with TensorFlow right on your Mac.
+tensorflow-metal = "*"
 pytest = "*"
 pytest-cov = "*"
