@@ -56,7 +56,8 @@ class D1Polynomial(Polynomial):
         rows: int = 20
         columns: int = 1
         num_test_examples: int = 1
-        x = np.array([5, 7, 8, 4, 3, 23, 2, 5, 7, 9, 90, 6, 65, 5, 4, 34, 33, 3, 545, 2332], dtype=float).reshape(rows, columns)
+        x = np.array([5, 7, 8, 4, 3, 23, 2, 5, 7, 9, 90, 6, 65, 5, 4, 34, 33, 3, 545, 2332], dtype=float).reshape(rows,
+                                                                                                                  columns)
         y = np.array([self.compute(x)], dtype=float).reshape(rows, 1)
         x_test = np.array([10.0], dtype=float).reshape(num_test_examples, columns)
         y_test = np.array([i for i in self.compute(x_test)], dtype=float).reshape(num_test_examples, 1)
@@ -65,13 +66,12 @@ class D1Polynomial(Polynomial):
 
 
 async def train_model(degree: int, x_train, y_train, x_test, y_test):
-    match degree:
-        case 1:
-            model = keras.Sequential([keras.layers.Dense(units=1, input_shape=[1])])
-        case 2:
-            model = keras.Sequential([keras.layers.Dense(units=1, activation='elu', input_shape=[2])])
-        case _:
-            raise NotImplementedError(f"Polynomial degree {degree} is not supported")
+    if degree == 1:
+        model = keras.Sequential([keras.layers.Dense(units=1, input_shape=[1])])
+    elif degree == 2:
+        model = keras.Sequential([keras.layers.Dense(units=1, activation='elu', input_shape=[2])])
+    else:
+        raise NotImplementedError(f"Polynomial degree {degree} is not supported")
 
     model.compile(optimizer='RMSprop', loss="mae")
     print(model.summary())
